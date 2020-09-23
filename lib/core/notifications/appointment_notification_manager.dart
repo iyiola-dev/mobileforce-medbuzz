@@ -36,10 +36,37 @@ class AppointmentNotificationManager {
         'Notification Succesfully Scheduled at ${time.toString()} with id of $id');
   }
 
+  void showAppointmentAtSpecifiedInterval(
+      {int id, String title, String body, RepeatInterval interval}) async {
+    await flutterLocalNotificationsPlugin.periodicallyShow(
+        id, title, body, interval, getPlatformChannelSpecfics(id));
+    print('Notification Succesfully Scheduled at an interval with id of $id');
+  }
+
+  Future<List<PendingNotificationRequest>> showEg() async {
+    var pendingNotificationRequests =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+    print(pendingNotificationRequests);
+  }
+
+  void showAppointmentWeekdayAtTime(
+      {int id,
+      String title,
+      String body,
+      Day day,
+      Time time,
+      String tone}) async {
+    await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
+        id, title, body, day, time, getPlatformChannelSpecfics(id));
+    print(
+        'Notification Succesfully Scheduled at an Weekday and Time with id of $id');
+  }
+
   void showAppointmentNotificationOnce(
-      int id, String title, String body, DateTime time) async {
+      int id, String title, String body, DateTime time,
+      {String tone}) async {
     await flutterLocalNotificationsPlugin.schedule(
-        id, title, body, time, getPlatformChannelSpecfics(id));
+        id, title, body, time, getPlatformChannelSpecfics(id, toneName: tone));
     print(
         'Notification Succesfully Scheduled at ${time.toString()} with id of $id');
 
@@ -51,11 +78,14 @@ class AppointmentNotificationManager {
     //     'Notification Succesfully Scheduled at ${time.toString()} with id of $id');
   }
 
-  getPlatformChannelSpecfics(int id) {
+  getPlatformChannelSpecfics(int id, {String toneName}) {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
         '$id', 'your channel name', 'your channel description',
         importance: Importance.Max,
         priority: Priority.High,
+        sound: toneName.isNotEmpty
+            ? RawResourceAndroidNotificationSound(toneName)
+            : null,
         ticker: 'Fitness Reminder');
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(

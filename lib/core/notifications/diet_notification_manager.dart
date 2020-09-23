@@ -29,8 +29,8 @@ class DietNotificationManager {
   }
 
   void showDietNotificationDaily(
-      int id, String title, String body, int hour, int minute) async {
-    var time = new Time(hour, minute, 0);
+      int id, String title, String body, DateTime dateTime) async {
+    var time = new Time(dateTime.hour, dateTime.minute, 0);
     await flutterLocalNotificationsPlugin.showDailyAtTime(
         id, title, body, time, getPlatformChannelSpecfics(id));
     print(
@@ -38,11 +38,28 @@ class DietNotificationManager {
   }
 
   void showDietNotificationOnce(
-      int id, String title, String body, DateTime time) async {
+      int id, String title, String body, DateTime time,
+      {String toneName}) async {
     await flutterLocalNotificationsPlugin.schedule(
         id, title, body, time, getPlatformChannelSpecfics(id));
     print(
         'Notification Succesfully Scheduled at ${time.toString()} with id of $id');
+  }
+
+  void showDietNotificationWeekly({
+    int id,
+    String title,
+    String body,
+//    int dy,
+    Day dy,
+    DateTime dateTime,
+  }) async {
+    var time = Time(dateTime.hour, dateTime.minute, 0);
+    // the value passed as an argument in Day is an example for monday
+    await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
+        id, title, body, dy, time, getPlatformChannelSpecfics(id));
+    print(
+        'Notification Succesfully scheduled weekly on ${dy.toString()}s at ${dateTime.toString()} with id of $id');
   }
 
   getPlatformChannelSpecfics(int id) {
